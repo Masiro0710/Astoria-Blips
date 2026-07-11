@@ -177,9 +177,11 @@ Please do not redistribute claiming it as your own work.
 
 # Astoria-Blips
 
-シンプルで軽量な店舗営業状態Blipシステムです。
+FiveM向けのシンプルで軽量な店舗ステータスBlipシステムです。
 
-**QBCore・Qbox・ESX Legacy** に対応しています。
+✅ QBCore（対応・動作確認済み）
+✅ Qbox（対応・動作確認済み）
+⚠️ ESX Legacy（対応していますが、動作確認は行っていません）
 
 ---
 
