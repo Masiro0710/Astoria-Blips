@@ -2,7 +2,9 @@
 
 A simple and lightweight shop status blip system for FiveM.
 
-Supports **QBCore**, **Qbox**, and **ESX Legacy**.
+✅ QBCore (Supported & Tested)
+✅ Qbox (Supported & Tested)
+⚠️ ESX Legacy (Support included, but not tested)
 
 ---
 
