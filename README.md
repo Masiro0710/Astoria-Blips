@@ -146,8 +146,8 @@ Config.Shops = {
 The shop name is automatically displayed with its current status.
 
 ```text
-UwU Cafe（営業中）
-UwU Cafe（準備中）
+UwU Cafe（Open）
+UwU Cafe（Closed）
 ```
 
 ---
