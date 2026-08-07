@@ -8,8 +8,57 @@ CreateThread(function()
     end
 end)
 
+local function GetOnDutyCount(jobName)
+    local count = 0
+
+    for _, playerId in pairs(GetPlayers()) do
+        local src = tonumber(playerId)
+        local job = Bridge.GetPlayerJob(src)
+
+        if job
+            and job.name == jobName
+            and job.onduty then
+            count = count + 1
+        end
+    end
+
+    return count
+end
+
+local function CloseShopIfEmpty(jobName)
+    if not Config.Shops[jobName] then
+        return
+    end
+
+    if not ShopStates[jobName] then
+        return
+    end
+
+    local onDutyCount = GetOnDutyCount(jobName)
+
+    if onDutyCount <= 0 then
+        ShopStates[jobName] = false
+
+        TriggerClientEvent(
+            'Astoria-Blips:client:updateShop',
+            -1,
+            jobName,
+            false
+        )
+
+        print(
+            ('[Astoria-Blips] %s automatically changed to preparing because no players are on duty.')
+            :format(jobName)
+        )
+    end
+end
+
 RegisterNetEvent('Astoria-Blips:server:requestStates', function()
-    TriggerClientEvent('Astoria-Blips:client:updateAll', source, ShopStates)
+    TriggerClientEvent(
+        'Astoria-Blips:client:updateAll',
+        source,
+        ShopStates
+    )
 end)
 
 RegisterCommand('openshop', function(source)
@@ -17,18 +66,31 @@ RegisterCommand('openshop', function(source)
     if not job then return end
 
     if not job.onduty then
-        Bridge.SendNotify(source, Lang.notify.not_on_duty, 'error')
+        Bridge.SendNotify(
+            source,
+            Lang.notify.not_on_duty,
+            'error'
+        )
         return
     end
 
     if not Config.Shops[job.name] then
-        Bridge.SendNotify(source, Lang.notify.not_registered, 'error')
+        Bridge.SendNotify(
+            source,
+            Lang.notify.not_registered,
+            'error'
+        )
         return
     end
 
     ShopStates[job.name] = true
 
-    TriggerClientEvent('Astoria-Blips:client:updateShop', -1, job.name, true)
+    TriggerClientEvent(
+        'Astoria-Blips:client:updateShop',
+        -1,
+        job.name,
+        true
+    )
 
     Bridge.SendNotify(
         source,
@@ -42,18 +104,31 @@ RegisterCommand('closeshop', function(source)
     if not job then return end
 
     if not job.onduty then
-        Bridge.SendNotify(source, Lang.notify.not_on_duty, 'error')
+        Bridge.SendNotify(
+            source,
+            Lang.notify.not_on_duty,
+            'error'
+        )
         return
     end
 
     if not Config.Shops[job.name] then
-        Bridge.SendNotify(source, Lang.notify.not_registered, 'error')
+        Bridge.SendNotify(
+            source,
+            Lang.notify.not_registered,
+            'error'
+        )
         return
     end
 
     ShopStates[job.name] = false
 
-    TriggerClientEvent('Astoria-Blips:client:updateShop', -1, job.name, false)
+    TriggerClientEvent(
+        'Astoria-Blips:client:updateShop',
+        -1,
+        job.name,
+        false
+    )
 
     Bridge.SendNotify(
         source,
@@ -61,3 +136,19 @@ RegisterCommand('closeshop', function(source)
         'error'
     )
 end, false)
+
+CreateThread(function()
+    while true do
+        Wait(5000)
+
+        for jobName, isOpen in pairs(ShopStates) do
+            if isOpen then
+                CloseShopIfEmpty(jobName)
+            end
+        end
+    end
+end)
+
+AddEventHandler('playerDropped', function()
+
+end)
